@@ -12,4 +12,9 @@ public class Constants {
         PUBLIC,
         PRIVATE
     }
+
+    public enum Gender {
+        M,
+        F
+    }
 }

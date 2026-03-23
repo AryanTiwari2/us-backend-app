@@ -3,8 +3,6 @@ package com.aryan.us_backend_app.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.tomcat.util.bcel.Const;
-
 import com.aryan.us_backend_app.constants.Constants;
 
 import jakarta.persistence.Column;
@@ -33,6 +31,24 @@ public class UserModel {
     
      @Column(name = "password")
     public String password;
+
+    @Column(name = "gender")
+    public String gender;
+
+    @Column(name = "description")
+    public String description;
+
+    @Column(name = "name")
+    public String name;
+
+    @Column(name = "image")
+    public String image;
+
+    @Column(name = "social_link")
+    public String socialLink;
+
+    @Column(name = "theme_color")
+    public String themeColor;
 
     @ManyToMany
     @JoinTable(name = "user_rooms", joinColumns = @JoinColumn(name = "userid"), inverseJoinColumns = @JoinColumn(name = "roomid"))

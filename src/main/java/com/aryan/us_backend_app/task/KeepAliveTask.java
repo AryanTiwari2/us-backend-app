@@ -9,7 +9,7 @@ public class KeepAliveTask {
     
     private final RestTemplate restTemplate = new RestTemplate();
 
-    @Scheduled(fixedRate = 15*60*1000)
+    @Scheduled(fixedRate = 9*60*1000) // every 9 minutes
     public void pingSelf(){
         try{
         String response = restTemplate.getForObject("https://us-backend-app.onrender.com/profile/health", String.class);

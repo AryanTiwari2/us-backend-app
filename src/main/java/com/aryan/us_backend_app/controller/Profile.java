@@ -3,6 +3,7 @@ package com.aryan.us_backend_app.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 // import org.springframework.security.access.method.P;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -11,9 +12,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.aryan.us_backend_app.dto.LoginRequestDto;
 import com.aryan.us_backend_app.dto.LoginUsingToken;
+import com.aryan.us_backend_app.dto.ProfileEditRequestDto;
 import com.aryan.us_backend_app.dto.SignInRequestDto;
 import com.aryan.us_backend_app.dto.UpdateUserRoom;
 import com.aryan.us_backend_app.response.LoginResponse;
+import com.aryan.us_backend_app.response.ProfilePageResponse;
 import com.aryan.us_backend_app.response.UserRoomUpdateResponse;
 import com.aryan.us_backend_app.service.ProfileService;
 
@@ -55,6 +58,17 @@ public class Profile {
     @PostMapping("/removeUserRoom")
     public UserRoomUpdateResponse removeUserRoom(@Valid @RequestBody UpdateUserRoom request , @RequestHeader("token") String token) throws Exception {
         return profileService.removeUserRoom(request.username, request.roomName, token);
+    }
+
+    @GetMapping("/getUserProfilePage/{username}")
+    public ProfilePageResponse getUserProfilePage(@RequestHeader("token") String token ,@PathVariable String username) throws Exception {
+        if(username==null) throw new Exception("Pass username in path");
+        return profileService.getUserProfilePage(username, token);
+    }
+
+    @PostMapping("/updateProfilePage")
+    public ProfilePageResponse updateProfilePage(@Valid @RequestBody ProfileEditRequestDto request , @RequestHeader("token") String token) throws Exception {
+        return profileService.updateProfilePage(request, token);
     }
 
     @GetMapping("/health")

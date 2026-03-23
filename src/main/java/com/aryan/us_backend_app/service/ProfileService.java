@@ -3,7 +3,6 @@ package com.aryan.us_backend_app.service;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.security.SecurityProperties.User;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -12,10 +11,12 @@ import com.aryan.us_backend_app.DbOperation.UserOperation;
 import com.aryan.us_backend_app.constants.Constants;
 import com.aryan.us_backend_app.constants.JwtUtil;
 import com.aryan.us_backend_app.dto.LoginRequestDto;
+import com.aryan.us_backend_app.dto.ProfileEditRequestDto;
 import com.aryan.us_backend_app.dto.SignInRequestDto;
 import com.aryan.us_backend_app.model.RoomModel;
 import com.aryan.us_backend_app.model.UserModel;
 import com.aryan.us_backend_app.response.LoginResponse;
+import com.aryan.us_backend_app.response.ProfilePageResponse;
 import com.aryan.us_backend_app.response.UserRoomUpdateResponse;
 
 import io.jsonwebtoken.Claims;
@@ -133,5 +134,50 @@ public class ProfileService {
 
         return new UserRoomUpdateResponse(userUpdated.username, roomList, usernameStr);
 
+    }
+
+    public ProfilePageResponse getUserProfilePage(String username , String token) throws Exception {
+        Claims claims = JwtUtil.parseToken(token);
+        String usernameStr = (String) claims.get("username");
+        String userRoomStr = (String) claims.get("roomName");
+
+        if(userOperation.getUserByName(usernameStr) == null){
+            throw new Exception("Invalid token");
+        }
+
+        UserModel user = userOperation.getUserByNameAndRoom(username,userRoomStr);
+        if(user == null) {
+            throw new Exception("User does not exist");
+        }
+        return new ProfilePageResponse(user, userRoomStr);
+    }
+
+    public ProfilePageResponse updateProfilePage(ProfileEditRequestDto request , String token) throws Exception {
+        Claims claims = JwtUtil.parseToken(token);
+        String usernameStr = (String) claims.get("username");
+        String userRoomStr = (String) claims.get("roomName");
+        UserModel user = userOperation.getUserByName(usernameStr);
+        if(user==null) throw new Exception("User does not exist");
+
+        if (request.name != null) {
+            user.name = request.name;
+        }
+        if(request.description != null) {
+            user.description = request.description;
+        }
+        if(request.gender != null) {
+            user.gender = request.gender.toString();
+        }
+        if(request.image != null) {
+            user.image = request.image;
+        }
+        if(request.socialLink != null) {
+            user.socialLink = request.socialLink;
+        }
+        if(request.themeColor != null) {
+            user.themeColor = request.themeColor;
+        }
+        UserModel userUpdated = userOperation.saveUser(user);
+        return new ProfilePageResponse(userUpdated, userRoomStr);
     }
 }

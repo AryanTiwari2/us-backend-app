@@ -15,6 +15,7 @@ import com.aryan.us_backend_app.dto.ProfileEditRequestDto;
 import com.aryan.us_backend_app.dto.SignInRequestDto;
 import com.aryan.us_backend_app.model.RoomModel;
 import com.aryan.us_backend_app.model.UserModel;
+import com.aryan.us_backend_app.response.GetAllRoomResponse;
 import com.aryan.us_backend_app.response.LoginResponse;
 import com.aryan.us_backend_app.response.ProfilePageResponse;
 import com.aryan.us_backend_app.response.UserRoomUpdateResponse;
@@ -179,5 +180,18 @@ public class ProfileService {
         }
         UserModel userUpdated = userOperation.saveUser(user);
         return new ProfilePageResponse(userUpdated, userRoomStr);
+    }
+
+
+    public GetAllRoomResponse getAllRoomOfUser(String token) throws Exception {
+        Claims claims = JwtUtil.parseToken(token);
+        String username = (String) claims.get("username");
+
+        if (username == null)
+            throw new Exception("Invalid token user type");
+
+        UserModel user = userOperation.getUserByName(username);
+
+        return new GetAllRoomResponse(user.rooms);
     }
 }

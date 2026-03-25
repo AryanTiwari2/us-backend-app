@@ -15,6 +15,7 @@ import com.aryan.us_backend_app.dto.LoginUsingToken;
 import com.aryan.us_backend_app.dto.ProfileEditRequestDto;
 import com.aryan.us_backend_app.dto.SignInRequestDto;
 import com.aryan.us_backend_app.dto.UpdateUserRoom;
+import com.aryan.us_backend_app.response.GetAllRoomResponse;
 import com.aryan.us_backend_app.response.LoginResponse;
 import com.aryan.us_backend_app.response.ProfilePageResponse;
 import com.aryan.us_backend_app.response.UserRoomUpdateResponse;
@@ -70,6 +71,12 @@ public class Profile {
     public ProfilePageResponse updateProfilePage(@Valid @RequestBody ProfileEditRequestDto request , @RequestHeader("token") String token) throws Exception {
         return profileService.updateProfilePage(request, token);
     }
+
+    @GetMapping("/getAllRoomOfUser")
+    public GetAllRoomResponse getAllRoomOfUser(@RequestHeader("token") String token) throws Exception {
+        return profileService.getAllRoomOfUser(token);
+    }
+
 
     @GetMapping("/health")
     public String test() {

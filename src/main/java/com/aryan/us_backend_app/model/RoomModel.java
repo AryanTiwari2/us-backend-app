@@ -1,10 +1,5 @@
 package com.aryan.us_backend_app.model;
 
-import java.util.List;
-
-import org.apache.tomcat.util.bcel.Const;
-import org.apache.tomcat.util.bcel.classfile.Constant;
-
 import com.aryan.us_backend_app.constants.Constants;
 
 import jakarta.persistence.Column;

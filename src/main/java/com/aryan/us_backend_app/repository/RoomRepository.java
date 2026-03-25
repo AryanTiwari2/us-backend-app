@@ -8,4 +8,5 @@ import com.aryan.us_backend_app.model.RoomModel;
 @Repository
 public interface RoomRepository extends JpaRepository<RoomModel, Long> {
    RoomModel findByRoomName(String roomName);
+   RoomModel findByRoomId(Long roomId);
 }

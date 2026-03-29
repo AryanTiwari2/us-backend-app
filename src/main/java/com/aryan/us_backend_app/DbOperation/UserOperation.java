@@ -1,9 +1,11 @@
 package com.aryan.us_backend_app.DbOperation;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.SecurityProperties.User;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -12,9 +14,11 @@ import com.aryan.us_backend_app.constants.Constants;
 import com.aryan.us_backend_app.model.MovieModel;
 import com.aryan.us_backend_app.model.RoomModel;
 import com.aryan.us_backend_app.model.UserModel;
+import com.aryan.us_backend_app.model.UserRoomModel;
 import com.aryan.us_backend_app.repository.MovieRepository;
 import com.aryan.us_backend_app.repository.RoomRepository;
 import com.aryan.us_backend_app.repository.UserRepository;
+import com.aryan.us_backend_app.repository.UserRoomRepository;
 
 @Component
 public class UserOperation {
@@ -26,6 +30,9 @@ public class UserOperation {
 
     @Autowired
     private MovieRepository movieRepository;
+
+    @Autowired
+    private UserRoomRepository userRoomRepository;
 
     public UserModel getUserByName(String name) {
         return userRepository.findByUsername(name);
@@ -60,7 +67,7 @@ public class UserOperation {
         if (room == null)
             throw new Exception("Room does not exist");
 
-        if (userRepository.existsByUserIdAndRoomsRoomId(user.userId, room.roomId))
+        if (userRoomRepository.existsByUser_UserIdAndRoom_RoomId(user.userId, room.roomId))
             return user;
 
         if (room.roomType.equals(Constants.RoomType.PUBLIC.toString()))
@@ -88,13 +95,15 @@ public class UserOperation {
         if (room == null)
             return null;
 
-        user.rooms.add(room);
-        return userRepository.save(user);
+        UserModel savedUser = userRepository.save(user);
+
+        userRoomRepository.save(new UserRoomModel(savedUser, room));
+        return savedUser;
     }
 
-    public RoomModel createRoom(String roomName, String roomType) {
+    public RoomModel createRoom(String roomName, String roomType) throws Exception {
         if (roomRepository.findByRoomName(roomName) != null)
-            return null;
+            throw new Exception("Room already exists");
 
         RoomModel room = new RoomModel(roomName);
         Constants.RoomType roomTypeEnum = Constants.RoomType.valueOf(roomType);
@@ -118,10 +127,10 @@ public class UserOperation {
         if (existingRoom == null)
             return null;
 
-        if (user.rooms.contains(existingRoom))
+        if (userRoomRepository.existsByUser_UserIdAndRoom_RoomId(user.userId, existingRoom.roomId))
             return user;
 
-        user.rooms.add(existingRoom);
+        userRoomRepository.save(new UserRoomModel(user, existingRoom));
 
         return userRepository.save(user);
     }
@@ -144,10 +153,10 @@ public class UserOperation {
         if (existingRoom == null)
             throw new Exception("Room does not exist");
 
-        if (!user.rooms.contains(existingRoom))
+        if (!userRoomRepository.existsByUser_UserIdAndRoom_RoomId((user.userId), existingRoom.roomId))
             throw new Exception("User is not in the room");
 
-        user.rooms.remove(existingRoom);
+        userRoomRepository.deleteByUser_UserIdAndRoom_RoomId(user.userId, existingRoom.roomId);
 
         return userRepository.save(user);
     }
@@ -209,5 +218,23 @@ public class UserOperation {
             existingMovie.thumbnail = movie.thumbnail;
 
         return movieRepository.save(existingMovie);
+    }
+
+    public List<RoomModel> getAllUsersRoom(Long userId) {
+        List<UserRoomModel> userRooms = userRoomRepository.findByUser_UserId(userId);
+        List<RoomModel> rooms = new ArrayList<>();
+        for (UserRoomModel userRoom : userRooms) {
+            rooms.add(userRoom.room);
+        }
+        return rooms;
+    }
+
+    public List<UserModel> getAllUsersInRoom(Long roomId) {
+        List<UserRoomModel> userRooms = userRoomRepository.findByRoom_RoomId(roomId);
+        List<UserModel> users = new ArrayList<>();
+        for (UserRoomModel userRoom : userRooms) {
+            users.add(userRoom.user);
+        }
+        return users;
     }
 }

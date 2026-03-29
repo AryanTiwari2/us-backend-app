@@ -8,6 +8,5 @@ import com.aryan.us_backend_app.model.UserModel;
 public interface UserRepository extends JpaRepository<UserModel, Long> {
     UserModel findByUsernameAndUserId(String username, Long userId);
     UserModel findByUsername(String username);
-    boolean existsByUserIdAndRoomsRoomId(Long userId, Long roomId);
     UserModel findByUserId(Long userId);
 }

@@ -10,11 +10,14 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.aryan.us_backend_app.dto.ChangeUserRoleDto;
 import com.aryan.us_backend_app.dto.LoginRequestDto;
 import com.aryan.us_backend_app.dto.LoginUsingToken;
 import com.aryan.us_backend_app.dto.ProfileEditRequestDto;
 import com.aryan.us_backend_app.dto.SignInRequestDto;
 import com.aryan.us_backend_app.dto.UpdateUserRoom;
+import com.aryan.us_backend_app.model.UserModel;
+import com.aryan.us_backend_app.response.ChangeUserRoleResponse;
 import com.aryan.us_backend_app.response.GetAllRoomResponse;
 import com.aryan.us_backend_app.response.LoginResponse;
 import com.aryan.us_backend_app.response.ProfilePageResponse;
@@ -77,6 +80,10 @@ public class Profile {
         return profileService.getAllRoomOfUser(token);
     }
 
+    @PostMapping("/changeUserRole")
+    public ChangeUserRoleResponse updateUserRole(@Valid @RequestBody ChangeUserRoleDto request , @RequestHeader("token") String token) throws Exception {
+        return profileService.updateUserRole(request, token);
+    }
 
     @GetMapping("/health")
     public String test() {

@@ -1,12 +1,17 @@
 package com.aryan.us_backend_app.service;
 
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.aryan.us_backend_app.DbOperation.UserOperation;
 import com.aryan.us_backend_app.constants.Constants;
 import com.aryan.us_backend_app.constants.JwtUtil;
 import com.aryan.us_backend_app.model.RoomModel;
+import com.aryan.us_backend_app.model.UserModel;
+import com.aryan.us_backend_app.response.AllUsersInRoom;
 
 import io.jsonwebtoken.Claims;
 
@@ -35,5 +40,18 @@ public class RoomService {
             throw new Exception("Only admin can update room");
 
         return userOperation.updateRoom(roomName, roomType);
+    }
+
+    public AllUsersInRoom getAllUserInRoom(String token) throws Exception {
+
+        Claims claims = JwtUtil.parseToken(token);
+        String roomNameFromToken = (String) claims.get("roomName");
+        RoomModel room = userOperation.getRoomByName(roomNameFromToken);
+        if (room == null) {
+            throw new Exception("Room does not exist");
+        }
+
+        List<UserModel> users = userOperation.getAllUsersInRoom(room.roomId);
+        return new AllUsersInRoom(room.roomName, room.roomType, users);
     }
 }

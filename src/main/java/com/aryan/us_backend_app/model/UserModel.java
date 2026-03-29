@@ -50,9 +50,9 @@ public class UserModel {
     @Column(name = "theme_color")
     public String themeColor;
 
-    @ManyToMany
-    @JoinTable(name = "user_rooms", joinColumns = @JoinColumn(name = "userid"), inverseJoinColumns = @JoinColumn(name = "roomid"))
-    public List<RoomModel> rooms;
+    // @ManyToMany
+    // @JoinTable(name = "user_rooms", joinColumns = @JoinColumn(name = "userid"), inverseJoinColumns = @JoinColumn(name = "roomid"))
+    // public List<RoomModel> rooms;
 
     // Constructors
     public UserModel() {}
@@ -61,6 +61,6 @@ public class UserModel {
         this.username = username;
         this.password = password;
         this.userType = Constants.UserType.REGULAR.toString();
-        this.rooms = new ArrayList<>();
+        // this.rooms = new ArrayList<>();
     }
 }
